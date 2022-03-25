@@ -30,7 +30,7 @@
 
  
 ////////////////////////////////////////////////////////////////////
-//DO NOT MODIFY ANY OF THE FOLLOWING
+//DO NOT MODIF ANY OF THE FOLLOWING
 ////////////////////////////////////////////////////////////////////
 #include <FastLED.h> //Library used to address WS2812 LEDs
 
@@ -38,19 +38,21 @@ const byte HALL_PIN = 2;    //Pin connected to Hall Sensor Data Input
 const byte LEDS_PIN = 8;    //Pin connected to LED data input
 const byte NUM_LEDS = 59;   //Number of LEDS per strip on board
 
-CRGB leds[NUM_LEDS];  // Initialize array of LEDs
+unsigned short int iterations = 0; //Counts the number of cycles copmleted in the duration of LEDS_APART
+unsigned short int color = 0; // Iterates between each color
+
+const unsigned short int readingsPerRevolution = 1; //Number of magnets on a wheel
+const float calibration = 0.082; // Calibration to match speed
 
 
 //Time measurement variables
-volatile unsigned long period = 10;       // Measured in Milliseconds
+volatile unsigned long period = 10000;    // Measured in Milliseconds
 volatile unsigned long lastMeasurement;   // Measured in Milliseconds
 volatile unsigned long currentTime;       // Measured in Milliseconds
 
-const float calibration = 0.082; // Calibration to match speed
-const unsigned short int readingsPerRevolution = 1; //Number of magnets on a wheel
 
-unsigned short int iterations = 0; //Counts the number of cycles copmleted in the duration of LEDS_APART
-unsigned short int color = 0; // Iterates between each color
+CRGB leds[NUM_LEDS];  // Initialize array of LEDs
+
 
 
 //Function Declarations
@@ -71,8 +73,8 @@ void Ramping_LED_Ends();
 //YOU MAY MODIFY THE FOLOWWING ITEMS
 ////////////////////////////////////////////////////////////////////
 
-#define LEDS_APART 8  //Specify distance between lit LEDs. Every Nth LED will be lit.
-#define colors 3      //Specify the number of colors to use.
+const byte  LEDS_APART = 10;  //Specify distance between lit LEDs. Every Nth LED will be lit.
+const byte colors = 3;      //Specify the number of colors to use.
 const byte maxBrightness = 100;  //255 max
 
 CRGB colorArr[colors] = {CRGB(maxBrightness,0,0), CRGB(0,maxBrightness,0), CRGB(0,0,maxBrightness)}; //Specify RGB color values for each color
@@ -160,7 +162,7 @@ void LED_Speed_Match(){
 
   
   // If board stops moving, stop lights where they are
-  if(millis() - lastMeasurement > 700){  //If no magnet detection for 700 milliseconds
+  if(millis() - lastMeasurement > 1000){  //If no magnet detection for 1000 milliseconds
     currentTime = millis();
     while(lastMeasurement < currentTime){
       // Wait some more.
